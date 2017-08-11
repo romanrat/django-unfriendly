@@ -1,4 +1,7 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-  working with pycryptodome also need to change  in setup.py:
+#install_requires = [
+#        'pycryptodome>=3.4.6', 'six',
+#    ],
 """Various encryption utilites."""
 
 import base64
@@ -29,7 +32,7 @@ def _lazysecret(secret, blocksize=32, padding='}'):
 def _crc(plaintext):
     """Generates crc32. Modulo keep the value within int range."""
     if not isinstance(plaintext, six.binary_type):
-        plaintext = six.b(plaintext)
+        plaintext = plaintext.encode('latin-1')
     return (zlib.crc32(plaintext) % 2147483647) & 0xffffffff
 
 def _pack_crc(plaintext):
@@ -46,10 +49,10 @@ def encrypt(plaintext, secret, inital_vector, checksum=True, lazy=True):
     returns ciphertext
     """
     if not isinstance(plaintext, six.binary_type):
-        plaintext = six.b(plaintext)
-
+        plaintext = plaintext.encode('latin-1')
     secret = _lazysecret(secret) if lazy else secret
-    encobj = AES.new(secret, AES.MODE_CFB, inital_vector)
+
+    encobj = AES.new(secret.encode('latin-1'), AES.MODE_CFB, inital_vector.encode('latin-1'))
 
     if checksum:
         packed = _pack_crc(plaintext)
@@ -72,7 +75,7 @@ def decrypt(ciphertext, secret, inital_vector, checksum=True, lazy=True):
     returns plaintext
     """
     secret = _lazysecret(secret) if lazy else secret
-    encobj = AES.new(secret, AES.MODE_CFB, inital_vector)
+    encobj = AES.new(secret.encode('latin-1'), AES.MODE_CFB, inital_vector.encode('latin-1'))
     try:
         padded = ciphertext + ('=' * (len(ciphertext) % 4))
         decoded = base64.urlsafe_b64decode(str(padded))
