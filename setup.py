@@ -26,7 +26,7 @@ setup(
     include_package_data = True,
     package_data = {},
     install_requires = [
-        'pycrypto>=2.0.1', 'six',
+        'pycryptodome>=3.4.6', 'six', #also need to make changes utils.py
     ],
     classifiers = [
         'Development Status :: 5 - Production/Stable',
